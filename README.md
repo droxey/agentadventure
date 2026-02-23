@@ -9,8 +9,6 @@
   <img src="https://img.shields.io/badge/node-%3E%3D20-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js 20+">
   <img src="https://img.shields.io/badge/typescript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
   <img src="https://img.shields.io/badge/voice-experimental-orange?style=flat-square" alt="Voice: Experimental">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License: MIT"></a>
-  <img src="https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20docker-lightgrey?style=flat-square" alt="Platform">
 </p>
 
 -----
