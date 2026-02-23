@@ -276,14 +276,6 @@ On any voice failure (STT timeout, TTS error, stream routing issue), the skill a
 - Weekly `npm audit` / Snyk scans; remediate high-severity vulns within 7 days.
 - Quarterly API key rotation (ElevenLabs, Deepgram).
 - ESLint-security + OWASP checks in CI/CD; annual pen testing with Burp Suite.
-- Immutable audit logs retained for 1 year.
-
-|Standard        |Focus             |Example Action                                                |
-|----------------|------------------|--------------------------------------------------------------|
-|**GDPR**        |EU data protection|Consent prompts for audio; right to erasure for chat logs     |
-|**OWASP Top 10**|Web security      |Map to A01 Broken Access, A02 Sensitive Data, A03 Injection   |
-|**ISO 27001**   |InfoSec management|Risk assessments; incident response; Annex A controls         |
-|**SOC 2**       |Trust services    |Security, availability, processing integrity; Type 1/2 reports|
 
 ## Risks & Mitigations
 
@@ -352,6 +344,7 @@ Implementation is organized into 7 phases spanning 14–18 days:
 
 ## References
 
+- [Integration Plan (PLAN.md)](./PLAN.md)
 - [WorkAdventure Scripting API — Chat](https://docs.workadventu.re/developer/map-scripting/references/api-chat/)
 - [WorkAdventure Scripting API — Player](https://docs.workadventu.re/developer/map-scripting/references/api-player/)
 - [WorkAdventure Scripting API — Players (tracking)](https://docs.workadventu.re/developer/map-scripting/references/api-players/)
@@ -360,5 +353,3 @@ Implementation is organized into 7 phases spanning 14–18 days:
 - [WorkAdventure Realtime API (voice)](https://docs.workadventu.re/blog/realtime-api/)
 - [OpenClaw Skills Docs](https://docs.openclaw.ai/tools/skills)
 - [Playwright API Reference](https://playwright.dev/docs/api/class-page)
-- [Integration Plan (PLAN.md)](./PLAN.md)
-- [Copilot Instructions](./.github/copilot-instructions.md)
