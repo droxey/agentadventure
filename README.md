@@ -25,7 +25,6 @@
 - [Voice Integration](#voice-integration)
 - [Security](#security)
 - [Risks & Mitigations](#risks--mitigations)
-- [Roadmap](#roadmap)
 - [Troubleshooting](#troubleshooting)
 - [References](#references)
 
@@ -252,18 +251,6 @@ On any voice failure (STT timeout, TTS error, stream routing issue), the skill a
 - Scope session tokens per agent with JWT claims; expire after 1 hour of inactivity.
 - Enforce role-based access — deny on `agentId` mismatch.
 
-### Browser Automation
-
-- Run Playwright in Docker sandbox with seccomp filters; non-root user.
-- Sanitize all `page.evaluate` inputs (DOMPurify / escape-html); restrict to whitelisted functions.
-- Disable unnecessary browser features; block popups.
-
-### Data Handling & Privacy
-
-- Encrypt audio streams end-to-end (DTLS-SRTP); HTTPS for all comms.
-- Mask PII in logs (`[REDACTED]` for usernames).
-- Auto-delete session data after 1 hour of inactivity.
-
 ### API & Network
 
 - Rate-limit exposed functions (10 calls/sec per agent); validate with Joi schemas.
@@ -313,21 +300,6 @@ On any voice failure (STT timeout, TTS error, stream routing issue), the skill a
 - **Voice E2E:** Fake audio stream → STT → LLM → TTS → verify playback; test fallback on failure.
 - **Error E2E:** Kill browser mid-session → verify auto-restart and recovery logs; >95% uptime.
 - **Performance:** <20% CPU/mem overhead per agent; voice latency <500ms end-to-end.
-
-## Roadmap
-
-Implementation is organized into 7 phases spanning 14–18 days:
-
-|Phase                          |Scope                                                                                                               |Duration|
-|-------------------------------|--------------------------------------------------------------------------------------------------------------------|--------|
-|**1. Research & Setup**        |Self-host WA v1.28.9; verify Playwright in OpenClaw; test anonymous entry                                           |1–2 days|
-|**2. Design & Prototype**      |Define SKILL.md frontmatter; sketch runner and bridge; dry-run mock sessions                                        |2–3 days|
-|**3. Develop Core**            |Implement runner (anonymous login, retry, lifecycle) and bridge (eval wrappers, `configureTracking`, error notifies)|3–4 days|
-|**4. Interactions & Callbacks**|Proximity events, chat listener (bubble scope), typing indicators, multi-user testing                               |2–3 days|
-|**4.5. Voice Integration**     |STT/TTS bridging, audio stream listeners, fallback to text, voice E2E                                               |3–4 days|
-|**5. Polish & Package**        |`openclaw.json` config entry, crash recovery, SKILL.md docs                                                         |1–2 days|
-|**6. Test & Verify**           |Unit (Vitest), E2E, perf benchmarks, security audit                                                                 |2 days  |
-|**7. Deploy & Release**        |Publish to ClawHub; `openclaw skills list --eligible` verification; production monitoring                           |ongoing |
 
 ## Troubleshooting
 
