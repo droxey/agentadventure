@@ -13,14 +13,97 @@
 
 -----
 
+## Quick Start
+
+> **Prerequisite:** A running [WorkAdventure](https://workadventu.re) instance with [LiveKit](https://livekit.io) enabled.
+
+### Required API Keys
+
+| Key | Purpose | Required | Where to Get |
+|-----|---------|----------|--------------|
+| `WA_URL` | Your WorkAdventure instance URL | Yes | Your self-hosted WA deployment |
+| `WA_BOT_NAME` | Display name for the bot avatar | Yes | Any string you choose |
+| `ELEVENLABS_API_KEY` | Text-to-speech for voice chat | Voice only | [elevenlabs.io](https://elevenlabs.io) |
+| `DEEPGRAM_API_KEY` | Speech-to-text for voice chat | Voice only | [deepgram.com](https://deepgram.com) |
+
+### 1. Install OpenClaw
+
+```bash
+npm install -g openclaw@latest
+openclaw gateway start   # starts gateway; creates ~/.openclaw/ on first run
+```
+
+### 2. Install the Skill
+
+```bash
+# Option A: From ClawHub (once published)
+clawdhub install agentadventure
+
+# Option B: Manual (during development)
+mkdir -p ~/.openclaw/skills/agentadventure
+# Copy SKILL.md, runner.ts, bridge.ts into the folder
+cd ~/.openclaw/skills/agentadventure && npx playwright install chromium
+
+# Verify:
+openclaw skills list --eligible
+```
+
+### 3. Configure & Run
+
+Add the skill entry to `~/.openclaw/openclaw.json`:
+
+```json5
+{
+  "skills": {
+    "entries": {
+      "agentadventure": {
+        "enabled": true,
+        "env": {
+          "WA_URL": "http://play.workadventure.localhost/",
+          "WA_BOT_NAME": "AgentBot"
+        }
+      }
+    }
+  }
+}
+```
+
+For voice support, also add the voice-call skill entry:
+
+```json5
+{
+  "skills": {
+    "entries": {
+      "agentadventure": { "enabled": true, "env": { "WA_URL": "...", "WA_BOT_NAME": "AgentBot" } },
+      "voice-call": {
+        "enabled": true,
+        "env": {
+          "ELEVENLABS_API_KEY": "your-key-here",
+          "DEEPGRAM_API_KEY": "your-key-here"
+        }
+      }
+    }
+  }
+}
+```
+
+Then start the gateway:
+
+```bash
+openclaw gateway start
+```
+
+Verify by joining the WA map — the agent avatar should appear and respond to proximity chat.
+
+-----
+
 ## Table of Contents
 
+- [Quick Start](#quick-start)
 - [Overview](#overview)
 - [Features](#features)
 - [Architecture](#architecture)
 - [File Structure](#file-structure)
-- [Quick Start](#quick-start)
-- [Configuration](#configuration)
 - [Usage](#usage)
 - [Voice Integration](#voice-integration)
 - [Security](#security)
@@ -41,7 +124,7 @@ The entire skill is a single folder (`~/.openclaw/skills/agentadventure/`) deplo
 ## Features
 
 - **Avatar Presence** — Agents appear as real WA users with visible avatars, movement via `WA.player.moveTo()`, and full participation in proximity bubbles.
-- **Proximity Chat** — Bidirectional text chat using `WA.chat.sendChatMessage` / `onChatMessage` with `'bubble'` scope and typing indicators.
+- **Proximity Chat** — Bidirectional text chat using `WA.chat.sendChatMessage` / `onChatMessage` with `’bubble’` scope and typing indicators.
 - **Player Tracking** — Detects nearby players via `WA.players.onPlayerEnters` / `onPlayerLeaves` (with `configureTracking()`), plus bubble lifecycle via `proximityMeeting.onJoin()`.
 - **Voice (Experimental)** — STT/TTS pipeline through WA’s `listenToAudioStream` / `startAudioStream` APIs, bridged to OpenClaw voice skills (ElevenLabs, Deepgram). Falls back to text on failure.
 - **Matrix Fallback** — Leverages WA’s native Matrix bridge for global messaging, room sync, and non-proximity interactions via OpenClaw’s existing Matrix channel.
@@ -123,104 +206,6 @@ WA’s native Matrix bridge syncs proximity bubbles to Matrix rooms. The OpenCla
 ```
 
 Configuration lives in `~/.openclaw/openclaw.json` under `skills.entries.agentadventure`. OpenClaw skills are SKILL.md folders — there is no `plugin.json`.
-
-## Quick Start
-
-### Prerequisites
-
-- Docker and Docker Compose
-- Node.js v20+
-- Git
-- API keys for voice services (e.g., ElevenLabs) — optional, only needed for voice
-- Server: 4GB RAM, 2 cores minimum
-
-### 1. Deploy WorkAdventure
-
-```bash
-git clone https://github.com/workadventure/workadventure.git && cd workadventure
-cp .env.template .env   # Edit domain/ports/Matrix settings
-
-# Start with anonymous access (no OIDC):
-docker-compose -f docker-compose.yaml -f docker-compose-no-oidc.yaml up -d
-```
-
-Add to `/etc/hosts`:
-
-```
-127.0.0.1 oidc.workadventure.localhost redis.workadventure.localhost play.workadventure.localhost traefik.workadventure.localhost matrix.workadventure.localhost extra.workadventure.localhost icon.workadventure.localhost map-storage.workadventure.localhost uploader.workadventure.localhost maps.workadventure.localhost api.workadventure.localhost front.workadventure.localhost
-```
-
-Access at `http://play.workadventure.localhost/`. With anonymous access, bots enter by providing a display name — no user accounts needed.
-
-For production, add `docker-compose.livekit.yaml` for voice and secure HTTPS via Traefik.
-
-### 2. Install OpenClaw
-
-```bash
-npm install -g openclaw@latest
-# First run creates workspace automatically — no explicit init needed
-openclaw gateway start   # starts gateway; creates ~/.openclaw/ structure on first run
-```
-
-### 3. Install the Skill
-
-```bash
-# Option A: From ClawHub (once published)
-clawdhub install agentadventure
-
-# Option B: Manual (during development)
-mkdir -p ~/.openclaw/skills/agentadventure
-# Copy SKILL.md, runner.ts, bridge.ts into the folder
-cd ~/.openclaw/skills/agentadventure && npx playwright install chromium
-
-# Verify:
-openclaw skills list --eligible
-```
-
-### 4. Configure & Run
-
-Add the skill entry to `~/.openclaw/openclaw.json` (see [Configuration](#configuration)), then restart the gateway:
-
-```bash
-openclaw gateway start
-```
-
-Verify by joining the WA map — the agent avatar should appear and respond to proximity chat.
-
-## Configuration
-
-All configuration lives in `~/.openclaw/openclaw.json`:
-
-```json5
-{
-  "skills": {
-    "entries": {
-      "agentadventure": {
-        "enabled": true,
-        "env": {
-          "WA_URL": "http://play.workadventure.localhost/",
-          "WA_BOT_NAME": "AgentBot"
-        }
-      }
-    }
-  }
-}
-```
-
-For voice support, also configure the voice-call skill:
-
-```json5
-{
-  "skills": {
-    "entries": {
-      "agentadventure": { "enabled": true, "env": { "WA_URL": "...", "WA_BOT_NAME": "AgentBot" } },
-      "voice-call": { "enabled": true, "env": { "ELEVENLABS_API_KEY": "your-key-here" } }
-    }
-  }
-}
-```
-
-> WA with `docker-compose-no-oidc.yaml` uses anonymous login (name + Woka picker). No username/password credentials are needed — the bot enters a display name programmatically.
 
 ## Usage
 
